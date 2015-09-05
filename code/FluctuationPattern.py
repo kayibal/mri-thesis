@@ -203,18 +203,21 @@ class AudioAnalytics:
         else:
             #chopping into chunks
             chunk_size = 2**self.chunk
-        
-            s = self.raw[chunk_size*2:]     #remove intro
-            self.n_frames = floor(len(s)/float(chunk_size)) - 2
-            if(self.n_frames < 20):
-                s = s[:chunk_size*self.n_frames] #remove outro
-            else:
+            s = self.raw
+            self.n_frames = floor(len(s)/float(chunk_size))
+            if(self.n_frames < 7):
+                raise SmallFileError("this file is to short for analysis")
+            elif(self.n_frames <= 24): #usable audio is less than 2 min
+                print "small"
+                s = self.raw[chunk_size*2:chunk_size*(self.n_frames-2)] #get what we have remove intro
+                self.n_frames -= 4
+            elif (self.n_frames > 24):
+                s = self.raw[chunk_size*2:chunk_size*(self.n_frames-2)] #
                 idx = np.asarray([-chunk_size*10,chunk_size*10])+len(s)/2
                 s = s[idx[0]:idx[1]]
                 self.n_frames = 20
-            
             #keep only every third chunk
-            #TODO frame_skip as aparameter
+            print len(s),self.n_frames
             self.processed = (s.reshape((self.n_frames,chunk_size))[::3]).flatten()
     
     def powerspectrum(self):
@@ -225,7 +228,7 @@ class AudioAnalytics:
         '''
         w = np.hanning(self.window_size)
         n_iter = len(self.processed)/self.window_size*2-1
-        spectrum = np.zeros((self.window_size/2+1,n_iter))
+	spectrum = np.zeros((self.window_size/2+1,n_iter))
         idx = np.arange(self.window_size)
         #TODO vectorize with numpy rfftn... problem overlapping
         for i in range(n_iter):
@@ -459,8 +462,12 @@ class FluctuationPattern(AudioAnalytics):
         tck = interpolate.splrep(np.arange(len(FluctuationPattern.fs_model)),FluctuationPattern.fs_model,s=0)
         return interpolate.splev(frequency,tck,der=0)
 
-audio_dir = '/Users/Alan/Documents/thesis/code/music'
-data_dir = '/Users/Alan/Documents/thesis/code/spectral_data'
+class SmallFileError(Exception):
+    def __init__(self,message):
+        super(SmallFileError,self).__init__(message)
+
+audio_dir = '/home/kayibal/thesis/dataset'
+data_dir = '/home/kayibal/thesis/dataset/spectral_data'
 extension = '*.mp3'
 
 os.chdir(audio_dir)
@@ -468,10 +475,18 @@ for(directory, _,files) in os.walk("."):
     for audio in glob.glob(directory+"/"+extension):
         print audio
         start = time()
-        a = FluctuationPattern(audio,chunk=16,Hz=11025,)
-        fm = a.get_feature_matrix()
-        a.plot_frame(fm)
         filename = audio[1:].split(".")[0]
-        f = open(data_dir+filename+'.fluc', 'w')
-        f.write(fm.tobytes())
-        print "last file took: " + str(round(time()-start,3))
+        if not os.path.isfile(data_dir+filename):
+            try:
+                a = FluctuationPattern(audio,chunk=16,Hz=11025,)
+                fm = a.get_feature_matrix()
+                if not os.path.exists(data_dir+os.path.dirname(filename)):
+                    os.makedirs(data_dir+os.path.dirname(filename))
+                with open(data_dir+filename+'.fluc', 'w') as f:
+                        f.write(fm.tobytes())
+                print "last file took: " + str(round(time()-start,3))
+            except SmallFileError, e:
+                print e.message
+
+	else:
+		print "skipped"
