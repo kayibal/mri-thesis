@@ -4,6 +4,7 @@ Created on Sat Aug 29 23:07:30 2015
 
 @author: Alan
 """
+import os
 import numpy as np
 from math import exp, log
 from scipy.spatial.distance import cdist, euclidean
@@ -72,7 +73,7 @@ class SOM:
             self.last_input = inp
             self.calc_time()
             self.calc_learn_rate()
-            self.compute_bmu(inp)
+            self.compute_bmu((inp/np.linalg.norm(inp)))
             self.synaptic_adaptation()
             self.n += 1
             
@@ -91,10 +92,22 @@ class SOM:
                 u_matrix[i,j] += euclidean(self.weights[i,j],self.weights[i + 1,j - 1])
         plt.figure()
         #plt.subplot(1,2,1)
-        plt.imshow(u_matrix, cmap='gray')
+        plt.imshow(np.log(u_matrix), cmap="gray")
         #plt.subplot(1,2,2)
         #plt.imshow(np.floor(self.weights*255).astype('uint8'), origin='upper', aspect='auto', interpolation='nearest')
+data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
+#3243
+r = int(np.random.rand(1)[0]*10000)
+np.random.seed(9697)
+print r
+os.chdir(data_dir)
+#pcs = np.load("pcs.npy")
+reduced = np.load("reduced_data.npy").transpose()
+som = SOM(100,46)
+som.start_learning(reduced)
+som.visualize()
 
+'''
 som = SOM(40,3)
 reds = np.random.rand(200,3)*np.asarray([1.,10./255,10./255])
 blue = np.random.rand(200,3)*np.asarray([10./255,10./255,1])
@@ -103,3 +116,4 @@ yell = np.random.rand(200,3)*np.asarray([1,0.5,0])/2. + 0.5
 training = np.round(np.concatenate((reds,blue,green,yell)))
 som.start_learning(training)
 som.visualize()
+'''
