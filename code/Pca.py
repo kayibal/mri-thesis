@@ -55,7 +55,7 @@ class Pca:
         accepts single row vector or matrix data with data along rows
         returns reduced dimensionality data
         '''
-        centered = data-self.mean
+        centered = data-self.mean[:,np.newaxis]
         return np.dot(self.pcs,centered)
         
     def get_pca_rep(self, vector):
@@ -63,16 +63,18 @@ class Pca:
         return np.dot(self.pcs.transpose(), coeffs) + self.mean
 
         
-data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
+data_dir = '/home/kayibal/thesis/dataset/spectral_data'
 extension = '*.fluc'
 
 os.chdir(data_dir)
 data = []
 for(directory, _,files) in os.walk("."):
-    for fl in glob.glob(directory[1:]+extension):
+    for fl in glob.glob(data_dir+os.path.join(directory[1:],extension)):
         print fl
         data.append(np.fromfile(fl))
 data = np.vstack(data)
-p = Pca(data)
+p = Pca(data, energy_treshold=0.5)
 print p.dim
-reduced = p.project_data(data)
+reduced = p.project_data(data.transpose())
+np.save("reduced_data",reduced)
+np.save("pcs",p.pcs)
