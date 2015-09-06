@@ -14,43 +14,6 @@ from scipy import interpolate
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from time import time
-#define some constants
-
-# border definitions of the 24 critical bands of hearing (bark scale)
-# zwicker & fastl: psychoacoustics 1999, page 159
-bark = np.array([100,   200,  300,  400,  510,  630,   770,   920, 
-        1080, 1270, 1480, 1720, 2000, 2320,  2700,  3150,
-        3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500])
-
-#the 6 curves which define the phon scale
-eq_loudness = np.array(
-    [[ 55,   40,  32,  24,  19,  14, 10,  6,  4,  3,  2,  
-        2,    0,  -2,  -5,  -4,   0,  5, 10, 14, 25, 35], 
-     [ 66,   52,  43,  37,  32,  27, 23, 21, 20, 20, 20,  
-       20,   19,  16,  13,  13,  18, 22, 25, 30, 40, 50], 
-     [ 76,   64,  57,  51,  47,  43, 41, 41, 40, 40, 40,
-     39.5, 38,  35,  33,  33,  35, 41, 46, 50, 60, 70], 
-     [ 89,   79,  74,  70,  66,  63, 61, 60, 60, 60, 60,  
-       59,   56,  53,  52,  53,  56, 61, 65, 70, 80, 90], 
-     [103,   96,  92,  88,  85,  83, 81, 80, 80, 80, 80,  
-       79,   76,  72,  70,  70,  75, 79, 83, 87, 95,105], 
-     [118,  110, 107, 105, 103, 102,101,100,100,100,100,  
-       99,   97,  94,  90,  90,  95,100,103,105,108,115]])
-       
-#defines mapping of tone frequency to the 22 discrete values of the phone curves    
-#or is the x value for eq_values object
-loudn_freq = np.array(
-    [31.62,   50,  70.7,   100, 141.4,   200, 316.2,  500, 
-     707.1, 1000,  1414,  1682,  2000,  2515,  3162, 3976,
-     5000,  7071, 10000, 11890, 14140, 15500])
-
-#phone levels we have data for
-phons = np.array([0,3,20,40,60,80,100,101])
-
-#model of fluctuation strength
-fs_model = np.array([0,42,80,95,100,95,89,82,77,74,68,65])/100.
-
-
 
 class AudioAnalytics:
     """AudioAnalytics base class.
@@ -331,7 +294,7 @@ class AudioAnalytics:
         ifac[np.where(levels==8)] = 1 # keeps the upper phon value;
     
         #finally the interpolation is computed here
-        self.processed[:,0:t] = phons.transpose().ravel()[levels - 2] + (ifac * (phons.transpose().ravel()[levels - 1] - phons.transpose().ravel()[levels - 2])) # OPT: pre-calc diff    
+        self.processed[:,0:t] = AudioAnalytics.phons.transpose().ravel()[levels - 2] + (ifac * (AudioAnalytics.phons.transpose().ravel()[levels - 1] - AudioAnalytics.phons.transpose().ravel()[levels - 2])) # OPT: pre-calc diff    
     
     def map_to_sone(self):
         '''phon are converted to linear sone scale'''
@@ -362,7 +325,7 @@ class AudioAnalytics:
         i = 0
         j = 0
         
-        for bsi in bark:
+        for bsi in AudioAnalytics.bark:
             if mode == 'classic':
                 #for each bark center frequency get the according column index for eq_loudness
                 while j < len(AudioAnalytics.loudn_freq) and bsi > AudioAnalytics.loudn_freq[j]:
@@ -466,8 +429,8 @@ class SmallFileError(Exception):
     def __init__(self,message):
         super(SmallFileError,self).__init__(message)
 
-audio_dir = '/home/kayibal/thesis/dataset'
-data_dir = '/home/kayibal/thesis/dataset/spectral_data'
+audio_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/music'
+data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
 extension = '*.mp3'
 
 os.chdir(audio_dir)
@@ -480,6 +443,7 @@ for(directory, _,files) in os.walk("."):
             try:
                 a = FluctuationPattern(audio,chunk=16,Hz=11025,)
                 fm = a.get_feature_matrix()
+                a.plot_frame(fm)
                 if not os.path.exists(data_dir+os.path.dirname(filename)):
                     os.makedirs(data_dir+os.path.dirname(filename))
                 with open(data_dir+filename+'.fluc', 'w') as f:
