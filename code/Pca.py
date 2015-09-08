@@ -23,7 +23,7 @@ class Pca:
             energy_treshold: float[0,1]
                 the relative treshold how much of the energy the pca should preserve
                 determines the amount of eigenvectors the pca matrix will contain
-        
+
         Attributes
         -------
         X (ndarray)     :  mean centered data matrix
@@ -77,4 +77,5 @@ p = Pca(data, energy_treshold=0.5)
 print p.dim
 reduced = p.project_data(data.transpose())
 np.save("reduced_data",reduced)
+np.save("mean",p.mean)
 np.save("pcs",p.pcs)

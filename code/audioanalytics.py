@@ -5,17 +5,16 @@ Created on Tue Aug 18 18:28:02 2015
 @author: Alan
 """
 import os
-import glob
 import numpy as np
 from numpy.fft import rfftn
 from math import floor, log, exp, ceil
 from pydub import AudioSegment
 from scipy import interpolate
-from scipy.fftpack import fft
+from scipy.fftpack import fft, dct
 import matplotlib.pyplot as plt
-from time import time
+from pylab import get_current_fig_manager
 
-class AudioAnalytics:
+class AudioAnalytics(object):
     """AudioAnalytics base class.
 
         This class stores all important constants and prepares the raw audio data.
@@ -425,32 +424,66 @@ class FluctuationPattern(AudioAnalytics):
         tck = interpolate.splrep(np.arange(len(FluctuationPattern.fs_model)),FluctuationPattern.fs_model,s=0)
         return interpolate.splev(frequency,tck,der=0)
 
+class MFCC(AudioAnalytics):
+    
+    def __init__(self, audiofile, mel_bands = 40):
+        super(MFCC, self).__init__(audiofile);
+        self.mel_bands = mel_bands
+        self.powerspectrum()
+        self.map_to_mel()
+        self.calc_gradient()
+        plt.figure()
+        mfcc = dct(self.processed, type=2, norm="ortho", axis=0)[:13]
+        plt.imshow(mfcc, origin="lower", aspect="auto",  interpolation="nearest")
+        self.delta = dct(self.delta, type=2, norm="ortho", axis=0)[:13]
+        self.processed = np.zeros(26)
+        self.processed[:13] = np.mean(mfcc, axis = 1)
+        self.processed[13:] = np.mean(self.delta, axis = 1)
+        
+    def mel_function(self, freq):
+        return 1125 * np.log(1. + (freq/700.))
+    
+    def inv_mel_function(self, mel):
+        return 700*(np.exp(mel/1125.) - 1.)
+    
+    def map_to_mel(self, max_freq=-1, min_freq = 0):
+        if max_freq == -1:
+            max_freq = self.freq/2
+            
+        filterbank = np.zeros((self.processed.shape[0],self.mel_bands))
+        mel_min = self.mel_function(min_freq)
+        mel_max = self.mel_function(max_freq)
+        #do linear spacing in logarithmic mel domain and transform back to frequency domain to get logarithmic spacing
+        mel_center = np.arange(mel_min,mel_max+1, (mel_max-mel_min)/(self.mel_bands+1))
+        freq_center = self.inv_mel_function(mel_center)
+        
+        freq_bin = float(self.freq)/self.window_size*np.arange(0,self.processed.shape[0])
+        for i in range(self.mel_bands):
+            low = freq_center[i]
+            cen = freq_center[i+1]
+            hi = freq_center[i+2]
+            
+            lid = np.where((freq_bin >= low) &(freq_bin < cen))
+            rid = np.where((freq_bin >= cen) &(freq_bin < hi))
+            
+            lslope = 1. / (cen-low)
+            rslope = 1. / (hi-cen)
+            
+            filterbank[:,i][lid] = lslope * (freq_bin[lid]-low)
+            filterbank[:,i][rid] = rslope * (hi - freq_bin[rid])
+        self.processed = np.log10(np.dot(self.processed.transpose(),filterbank).transpose())
+        
+    def calc_gradient(self):
+        self.delta = np.zeros(self.processed.shape)
+        for i in range(self.processed.shape[0]):
+            self.delta[i] = np.gradient(self.processed[i])
+    
 class SmallFileError(Exception):
     def __init__(self,message):
         super(SmallFileError,self).__init__(message)
 
-audio_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/music'
-data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
-extension = '*.mp3'
 
-os.chdir(audio_dir)
-for(directory, _,files) in os.walk("."):
-    for audio in glob.glob(directory+"/"+extension):
-        print audio
-        start = time()
-        filename = audio[1:].split(".")[0]
-        if not os.path.isfile(data_dir+filename):
-            try:
-                a = FluctuationPattern(audio,chunk=16,Hz=11025,)
-                fm = a.get_feature_matrix()
-                a.plot_frame(fm)
-                if not os.path.exists(data_dir+os.path.dirname(filename)):
-                    os.makedirs(data_dir+os.path.dirname(filename))
-                with open(data_dir+filename+'.fluc', 'w') as f:
-                        f.write(fm.tobytes())
-                print "last file took: " + str(round(time()-start,3))
-            except SmallFileError, e:
-                print e.message
+os.chdir('/Users/Alan/Documents/thesis/mri-thesis/code/music')
+m = MFCC("house.mp3")
 
-	else:
-		print "skipped"
+    

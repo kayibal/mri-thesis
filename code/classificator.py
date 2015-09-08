@@ -95,17 +95,11 @@ class SOM:
         plt.imshow(np.log(u_matrix), cmap="gray")
         #plt.subplot(1,2,2)
         #plt.imshow(np.floor(self.weights*255).astype('uint8'), origin='upper', aspect='auto', interpolation='nearest')
-data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
+
+
+#data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
 #3243
-r = int(np.random.rand(1)[0]*10000)
-np.random.seed(9697)
-print r
-os.chdir(data_dir)
-#pcs = np.load("pcs.npy")
-reduced = np.load("reduced_data.npy").transpose()
-som = SOM(100,46)
-som.start_learning(reduced)
-som.visualize()
+
 
 '''
 som = SOM(40,3)
