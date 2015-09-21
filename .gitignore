@@ -3,3 +3,4 @@
 *.wav
 *.npy
 *.npz
+*.pyc
