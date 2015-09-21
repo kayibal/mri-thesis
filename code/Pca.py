@@ -62,7 +62,41 @@ class Pca:
         coeffs = self.project_data(vector)
         return np.dot(self.pcs.transpose(), coeffs) + self.mean
 
+class MultivariateGaussian(object):
+    
+    @classmethod
+    def from_data_matrix(cls, feature_matrix):
+        mean = np.mean(feature_matrix, axis=0)
+        cov = np.cov(feature_matrix)
+        return cls(mean,cov)
+    
+    def __init__(self, cov,mean):
+        self.mean = mean
+        self.cov = cov
+        self.icov = np.invert(self.cov)
+         
+    def kld_left_centroid(self,mvn):
+        cov = 0.5*(self.icov + mvn.icov)
+        mean = cov * 0.5*(self.icov * self.mean + mvn.icov * mvn.mean)
+        return MultivariateGaussian(mean, cov)
         
+    def kld_right_centroid(self,mvn):
+        mean = 0.5 * (self.mean + mvn.mean)
+        cov = -1. * np.dot(mean[:,np.newaxis],mean[:,np.newaxis].transpose())
+        cov += 0.5 * ((np.dot(self.mean[:,np.newaxis],self.mean[:,np.newaxis].transpose())+ self.cov)
+                     +(np.dot(mvn.mean[:,np.newaxis],mvn.mean[:,np.newaxis].transpose())+ mvn.cov))
+        return MultivariateGaussian(mean, cov)
+        
+    def skld(self,mvn):
+        cr = self.kld_right_centroid(mvn)
+        cl = self.kld_left_centroid(mvn)
+        mean = 0.5 * (cr.mean + cl.mean)
+        cov = -1. * np.dot(mean[:,np.newaxis],mean[:,np.newaxis].transpose())
+        cov += 0.5 * ((np.dot(self.mean[:,np.newaxis],self.mean[:,np.newaxis].transpose())+ self.cov)
+                     +(np.dot(mvn.mean[:,np.newaxis],mvn.mean[:,np.newaxis].transpose())+ mvn.cov))
+
+
+'''
 data_dir = '/home/kayibal/thesis/dataset/spectral_data'
 extension = '*.fluc'
 
@@ -79,3 +113,4 @@ reduced = p.project_data(data.transpose())
 np.save("reduced_data",reduced)
 np.save("mean",p.mean)
 np.save("pcs",p.pcs)
+'''

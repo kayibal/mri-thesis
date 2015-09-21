@@ -34,6 +34,9 @@ class AudioAnalytics(object):
             in seconds will be floored to the prev power of 2
         terhardt : bool
             if True the Terhardt Outer Ear Model will be applied before mapping to bark scale
+        max_length:
+            maximal length of clip to be analyzed if the file is bigger the middle part is taken, if it is smaller
+            then the whole file is taken. Intro and outro are always removed
     
         Attributes
         -------
@@ -78,8 +81,9 @@ class AudioAnalytics(object):
     #phone levels we have data for
     phons = np.array([0,3,20,40,60,80,100,101])
     
-    def __init__(self, audiofile, Hz=11025, mono=True, chunk=16, window_size=0.023, terhardt=False):
+    def __init__(self, audiofile, Hz=11025, mono=True, chunk=16, window_size=0.023, terhardt=False, max_length = 120):
         self.freq = Hz
+        self.max_length =  max_length / round( 2.**chunk/self.freq)
         self.mono = mono
         self.chunk = chunk
         self.audiofile = audiofile
@@ -169,11 +173,11 @@ class AudioAnalytics(object):
             self.n_frames = floor(len(s)/float(chunk_size))
             if(self.n_frames < 7):
                 raise SmallFileError("this file is to short for analysis")
-            elif(self.n_frames <= 24): #usable audio is less than 2 min
+            elif(self.n_frames <= self.max_length + 4): #usable audio is less than 2 min
                 print "small"
                 s = self.raw[chunk_size*2:chunk_size*(self.n_frames-2)] #get what we have remove intro
                 self.n_frames -= 4
-            elif (self.n_frames > 24):
+            elif (self.n_frames > self.max_length + 4):
                 s = self.raw[chunk_size*2:chunk_size*(self.n_frames-2)] #
                 idx = np.asarray([-chunk_size*10,chunk_size*10])+len(s)/2
                 s = s[idx[0]:idx[1]]
@@ -400,7 +404,8 @@ class FluctuationPattern(AudioAnalytics):
         self.compute_modified_fp()
         return np.median(self.processed, axis=0)
         
-    def plot_frame(self,x):
+    @staticmethod
+    def plot_frame(x):
         '''
             Plots a 2-dimensional frame in modulation spectrum
         '''
@@ -426,8 +431,9 @@ class FluctuationPattern(AudioAnalytics):
 
 class MFCC(AudioAnalytics):
     
-    def __init__(self, audiofile, mel_bands = 40):
+    def __init__(self, audiofile, mel_bands = 40, weight=2):
         super(MFCC, self).__init__(audiofile);
+        self.weight = float(weight)
         self.mel_bands = mel_bands
         self.powerspectrum()
         self.map_to_mel()
@@ -466,11 +472,11 @@ class MFCC(AudioAnalytics):
             lid = np.where((freq_bin >= low) &(freq_bin < cen))
             rid = np.where((freq_bin >= cen) &(freq_bin < hi))
             
-            lslope = 1. / (cen-low)
-            rslope = 1. / (hi-cen)
+            lslope = self.weight / (cen-low)
+            rslope = self.weight / (hi-cen)
             
             filterbank[:,i][lid] = lslope * (freq_bin[lid]-low)
-            filterbank[:,i][rid] = rslope * (hi - freq_bin[rid])
+            filterbank[:,i][rid] = rslope * (hi - self.freq_bin[rid])
         self.processed = np.log10(np.dot(self.processed.transpose(),filterbank).transpose())
         
     def calc_gradient(self):
@@ -482,8 +488,7 @@ class SmallFileError(Exception):
     def __init__(self,message):
         super(SmallFileError,self).__init__(message)
 
-
-os.chdir('/Users/Alan/Documents/thesis/mri-thesis/code/music')
-m = MFCC("house.mp3")
+#os.chdir('/Users/Alan/Documents/thesis/mri-thesis/code/music')
+#m = MFCC("house.mp3")
 
     

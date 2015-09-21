@@ -9,11 +9,11 @@ import glob
 import time
 import numpy as np
 from pca import Pca
-from classificators import SOM
+from classificator import SOM
 from audioanalytics import FluctuationPattern, SmallFileError
 
 audio_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/music'
-data_dir = '/home/kayibal/thesis/dataset/spectral_data'
+data_dir = '/Users/Alan/Documents/thesis/mri-thesis/code/spectral_data'
 audio_extension = '*.mp3'
 data_extension = '*.npy'
 
@@ -34,7 +34,6 @@ def create_fluctuation_data():
                     print "last file took: " + str(round(time()-start,3))
                 except SmallFileError, e:
                     print e.message
-    
         	else:
                  print "skipped"
                  

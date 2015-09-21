@@ -38,6 +38,8 @@ class SOM:
         self.l_initial = 0.1
         self.learning_rate = 1000
         
+        self.trained = False
+        
         
         
     def compute_bmu(self, inp):
@@ -45,7 +47,11 @@ class SOM:
         dist = np.linalg.norm(self.weights-inp, axis=2)
         self.winning_neuron = np.unravel_index(np.argmin(dist), dist.shape)
         
-    
+    def compute_2nd_bmu(self, inp):
+        #computes distances using euklid norm
+        dist = np.linalg.norm(self.weights-inp, axis=2)
+        return np.unravel_index(np.partition(dist,2)[2], dist.shape)
+        
     def calc_time(self):
         self.time_n = self.t_initial * exp(-float(self.n)/self.time_const)
     
@@ -67,15 +73,43 @@ class SOM:
         self.weights += self.learn_n*neighborhood_matrix*(self.last_input - self.weights)
         
     def start_learning(self,training_data):
+        self.training_data = training_data
         self.time_const=len(training_data)/log(self.t_initial)
         np.random.shuffle(training_data)
         for inp in training_data:
-            self.last_input = inp
+            self.last_input = inp  #remove?
             self.calc_time()
             self.calc_learn_rate()
             self.compute_bmu((inp/np.linalg.norm(inp)))
             self.synaptic_adaptation()
             self.n += 1
+        self.trained = True
+            
+    def compute_topological_error(self, data = False):
+        if self.trained:
+            if not data:
+                #use trained data (default)
+                data = self.training_data
+            err = 0.
+            for inp in data:
+                self.compute_bmu(inp)
+                scnd = self.compute_2nd_bmu(inp)
+                if (euclidean(self.winning_neuron, scnd) > 1.42):
+                    err += 1
+            return err *1. / len(data)
+            
+    
+    def compute_quantization_error(self, data = False):
+        if self.trained:
+            if not data:
+                #use trained data (default)
+                data = self.training_data
+            err = 0.
+            for inp in data:
+                inp = inp/np.linalg.norm(inp)
+                self.compute_bmu(inp)
+                err += euclidean(self.weights[self.winning_neuron] - inp)
+            return err / len(data)
             
     def visualize(self):
         u_matrix = np.zeros((self.som_dim-1,self.som_dim-1))
