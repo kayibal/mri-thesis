@@ -5,12 +5,15 @@ Created on Sat Aug 29 23:07:30 2015
 @author: Alan
 """
 import os
+import scipy
 import numpy as np
 from math import exp, log
 from scipy.spatial.distance import cdist, euclidean
+from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+
 class SOM:
-    def __init__(self,dim, inp_size, spacing=1):
+    def __init__(self,dim, n_features, spacing=1, n_iter = 1000, tau = 10000, verbose = False, abort_cond = 1e-10):
         #init variables
         self.som_dim = dim
         #position nodes in gutter
@@ -21,7 +24,15 @@ class SOM:
         #x-dimensions
         self.pos[:,:,0] = np.tile(np.asarray([np.arange(dim, step=spacing)]), (dim,1))
         #rand init weights
-        self.weights = np.random.rand(dim,dim,inp_size)
+        self.weights = np.random.rand(dim,dim,n_features)
+        #labels
+        self.labels = None
+        #print output?
+        self.verbose = verbose
+        #change in quantization error
+        self.quant_err = 0
+        #abort after change in quantization error is small enough
+        self.abort_cond = abort_cond
         
         #time dependent variables
         self.winning_neuron = (0,0)
@@ -30,15 +41,18 @@ class SOM:
         self.learn_n = 0
         
         #time parameters       
-        self.n = 1
+        self.n = 0
         self.t_initial=dim*spacing*2
         self.time_const = 0
         
         #learning parameters
-        self.l_initial = 0.1
-        self.learning_rate = 1000
-        
+        self.l_initial = 0.1            #heuristic
+        self.learning_rate = tau      
+        self.n_iter = n_iter
         self.trained = False
+
+        #using sklearn modules
+        self.scaler = MinMaxScaler()
         
         
         
@@ -53,16 +67,8 @@ class SOM:
         return np.unravel_index(np.partition(dist,2)[2], dist.shape)
         
     def calc_time(self):
+        #defines radius of neighboorhood function time const depends on trianing data size
         self.time_n = self.t_initial * exp(-float(self.n)/self.time_const)
-    
-    '''
-    def top_neighborhood_func(self,x1=self.winning_neuron,x2):
-        x1 = tuple(x1)
-        x2 = tuple(x2)
-        
-        d = np.linal.norm(self.pos[x1],self.pos[x2])**2
-        return exp(-d/2*self.time_n)
-    '''
     
     def calc_learn_rate(self):
         self.learn_n = self.l_initial * exp(-float(self.n)/self.learning_rate)
@@ -72,18 +78,46 @@ class SOM:
         neighborhood_matrix = np.exp(-distance**2/(2*self.time_n))
         self.weights += self.learn_n*neighborhood_matrix*(self.last_input - self.weights)
         
-    def start_learning(self,training_data):
-        self.training_data = training_data
-        self.time_const=len(training_data)/log(self.t_initial)
-        np.random.shuffle(training_data)
-        for inp in training_data:
-            self.last_input = inp  #remove?
+    def fit(self,training_data):
+        #accepts training data in n_samples x n_features
+        self.training_data = self.scaler.fit_transform(training_data)
+        self.time_const=len(training_data)/log(self.t_initial) #heuristic
+        for i in range(self.n_iter):
             self.calc_time()
             self.calc_learn_rate()
-            self.compute_bmu((inp/np.linalg.norm(inp)))
-            self.synaptic_adaptation()
-            self.n += 1
+            np.random.shuffle(self.training_data)
+            for inp in self.training_data:
+                self.last_input = inp  #remove?
+                self.compute_bmu(inp)
+                self.synaptic_adaptation()
+            prev_quant_err = self.quant_err
+            self.quant_err = self.compute_quantization_error()
+            delta = abs(prev_quant_err - self.quant_err)
+            if(delta < self.abort_cond):
+                if self.verbose:
+                    print("Final quantization error is %f after %d iterations" % (self.quant_err,self.n))
+                break
+            if self.verbose:
+                print("Epoch %d of %d \nQuantization error change: %f" % (i, self.n_iter,delta))
+            self.n = i
         self.trained = True
+
+
+    def set_labels(self, labels):
+        self.labels = np.array(labels)
+
+    def predict(self, data):
+        label_ids = []
+        for inp in self.scaler.transform(data):
+            label_ids.append(np.ravel_index(compute_bmu(inp),(self.dim, self.dim)))
+        if self.labels != None:
+            return self.labels[label_ids]
+        else:
+            return np.array(label_ids)
+
+    def fit_predict(self,data):
+        self.fit(data)
+        return self.predict(data)
             
     def compute_topological_error(self, data = False):
         if self.trained:
@@ -91,7 +125,7 @@ class SOM:
                 #use trained data (default)
                 data = self.training_data
             err = 0.
-            for inp in data:
+            for inp in self.scaler.transform(data):
                 self.compute_bmu(inp)
                 scnd = self.compute_2nd_bmu(inp)
                 if (euclidean(self.winning_neuron, scnd) > 1.42):
@@ -100,15 +134,15 @@ class SOM:
             
     
     def compute_quantization_error(self, data = False):
-        if self.trained:
+        if True:
             if not data:
                 #use trained data (default)
                 data = self.training_data
             err = 0.
-            for inp in data:
-                inp = inp/np.linalg.norm(inp)
+            for inp in self.scaler.transform(data):
+                inp = inp
                 self.compute_bmu(inp)
-                err += euclidean(self.weights[self.winning_neuron] - inp)
+                err += scipy.linalg.norm(self.weights[self.winning_neuron] - inp)
             return err / len(data)
             
     def visualize(self):
@@ -124,7 +158,7 @@ class SOM:
                 u_matrix[i,j] += euclidean(self.weights[i,j],self.weights[i + 1,j + 1])
                 u_matrix[i,j] += euclidean(self.weights[i,j],self.weights[i - 1,j - 1])
                 u_matrix[i,j] += euclidean(self.weights[i,j],self.weights[i + 1,j - 1])
-        plt.figure()
+        #plt.figure()
         #plt.subplot(1,2,1)
         plt.imshow(np.log(u_matrix), cmap="gray")
         #plt.subplot(1,2,2)

@@ -1,0 +1,186 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v<VERSION> }
+
+\bibitem[Berenzweig et al. 2004]{berenzweig2004large}
+\abntrefinfo{Berenzweig et al.}{BERENZWEIG et al.}{2004}
+{BERENZWEIG, A. et al. A large-scale evaluation of acoustic and subjective
+  music-similarity measures.
+\textbf{Computer Music Journal}, MIT Press, v.~28, n.~2, p. 63--76, 2004.}
+
+\bibitem[Bertin-Mahieux et al. 2011]{Bertin-Mahieux2011}
+\abntrefinfo{Bertin-Mahieux et al.}{BERTIN-MAHIEUX et al.}{2011}
+{BERTIN-MAHIEUX, T. et al. The million song dataset. In:  \textbf{{Proceedings
+  of the 12th International Conference on Music Information Retrieval ({ISMIR}
+  2011)}}. [S.l.: s.n.], 2011.}
+
+\bibitem[Bishop 2006]{bishop2006pattern}
+\abntrefinfo{Bishop}{BISHOP}{2006}
+{BISHOP, C.~M. \textbf{Pattern recognition and machine learning}. [S.l.]:
+  springer, 2006.}
+
+\bibitem[Ekstrand, Riedl e Konstan 2011]{ekstrand2011collaborative}
+\abntrefinfo{Ekstrand, Riedl e Konstan}{EKSTRAND; RIEDL; KONSTAN}{2011}
+{EKSTRAND, M.~D.; RIEDL, J.~T.; KONSTAN, J.~A. Collaborative filtering
+  recommender systems.
+\textbf{Foundations and Trends in Human-Computer Interaction}, Now Publishers
+  Inc., v.~4, n.~2, p. 81--173, 2011.}
+
+\bibitem[Fastl 1982]{fastl1982fluctuation}
+\abntrefinfo{Fastl}{FASTL}{1982}
+{FASTL, H. Fluctuation strength and temporal masking patterns of
+  amplitude-modulated broadband noise.
+\textbf{Hearing Research}, Elsevier, v.~8, n.~1, p. 59--69, 1982.}
+
+\bibitem[Fastl e Zwicker 2007]{fastl2007psychoacoustics}
+\abntrefinfo{Fastl e Zwicker}{FASTL; ZWICKER}{2007}
+{FASTL, H.; ZWICKER, E. \textbf{Psychoacoustics: Facts and models}. [S.l.]:
+  Springer Science \& Business Media, 2007.}
+
+\bibitem[Furui 1986]{furui1986speaker}
+\abntrefinfo{Furui}{FURUI}{1986}
+{FURUI, S. Speaker-independent isolated word recognition based on emphasized
+  spectral dynamics. In:  IEEE. \textbf{Acoustics, Speech, and Signal
+  Processing, IEEE International Conference on ICASSP'86.} [S.l.], 1986. v.~11,
+  p. 1991--1994.}
+
+\bibitem[Gernet 1940]{gernet1940musical}
+\abntrefinfo{Gernet}{GERNET}{1940}
+{GERNET, S.~K. \textbf{Musical discrimination at various age and grade levels}.
+  [S.l.]: The College press, 1940.}
+
+\bibitem[Hariri, Mobasher e Burke 2012]{hariri2012context}
+\abntrefinfo{Hariri, Mobasher e Burke}{HARIRI; MOBASHER; BURKE}{2012}
+{HARIRI, N.; MOBASHER, B.; BURKE, R. Context-aware music recommendation based
+  on latenttopic sequential patterns. In:  ACM. \textbf{Proceedings of the
+  sixth ACM conference on Recommender systems}. [S.l.], 2012. p. 131--138.}
+
+\bibitem[Hebb 2005]{hebb2005organization}
+\abntrefinfo{Hebb}{HEBB}{2005}
+{HEBB, D.~O. \textbf{The organization of behavior: A neuropsychological
+  theory}. [S.l.]: Psychology Press, 2005.}
+
+\bibitem[Heinen e Engel 2010]{heinen2010incremental}
+\abntrefinfo{Heinen e Engel}{HEINEN; ENGEL}{2010}
+{HEINEN, M.~R.; ENGEL, P.~M. An incremental probabilistic neural network for
+  regression and reinforcement learning tasks. In:  \textbf{Artificial Neural
+  Networks--ICANN 2010}. [S.l.]: Springer, 2010. p. 170--179.}
+
+\bibitem[Herlocker, Konstan e Riedl 2002]{herlocker2002empirical}
+\abntrefinfo{Herlocker, Konstan e Riedl}{HERLOCKER; KONSTAN; RIEDL}{2002}
+{HERLOCKER, J.; KONSTAN, J.~A.; RIEDL, J. An empirical analysis of design
+  choices in neighborhood-based collaborative filtering algorithms.
+\textbf{Information retrieval}, Springer, v.~5, n.~4, p. 287--310, 2002.}
+
+\bibitem[Jansson, Raffel e Weyde]{janssonmy}
+\abntrefinfo{Jansson, Raffel e Weyde}{JANSSON; RAFFEL; WEYDE}{}
+{JANSSON, A.; RAFFEL, C.; WEYDE, T. This is my jam?data dump.}
+
+\bibitem[Kohonen 2012]{kohonen2012self}
+\abntrefinfo{Kohonen}{KOHONEN}{2012}
+{KOHONEN, T. \textbf{Self-organization and associative memory}. [S.l.]:
+  Springer, 2012.}
+
+\bibitem[Kumar, Kim e Stern 2011]{kumar2011delta}
+\abntrefinfo{Kumar, Kim e Stern}{KUMAR; KIM; STERN}{2011}
+{KUMAR, K.; KIM, C.; STERN, R.~M. Delta-spectral cepstral coefficients for
+  robust speech recognition. In:  IEEE. \textbf{Acoustics, Speech and Signal
+  Processing (ICASSP), 2011 IEEE International Conference on}. [S.l.], 2011. p.
+  4784--4787.}
+
+\bibitem[Lass 2012]{lass2012review}
+\abntrefinfo{Lass}{LASS}{2012}
+{LASS, N.~J. \textbf{Review of Speech and Hearing Sciences}. [S.l.]: Elsevier
+  Health Sciences, 2012.}
+
+\bibitem[Lidy e Rauber 2005]{lidy2005evaluation}
+\abntrefinfo{Lidy e Rauber}{LIDY; RAUBER}{2005}
+{LIDY, T.; RAUBER, A. Evaluation of feature extractors and psycho-acoustic
+  transformations for music genre classification. In:  \textbf{ISMIR}. [S.l.:
+  s.n.], 2005. p. 34--41.}
+
+\bibitem[Logan et al. 2000]{logan2000mel}
+\abntrefinfo{Logan et al.}{LOGAN et al.}{2000}
+{LOGAN, B. et al. Mel frequency cepstral coefficients for music modeling. In:
+  \textbf{ISMIR}. [S.l.: s.n.], 2000.}
+
+\bibitem[Low et al. 2014]{low2014graphlab}
+\abntrefinfo{Low et al.}{LOW et al.}{2014}
+{LOW, Y. et al. Graphlab: A new framework for parallel machine learning.
+\textbf{arXiv preprint arXiv:1408.2041}, 2014.}
+
+\bibitem[Niemann 2013]{niemann2013klassifikation}
+\abntrefinfo{Niemann}{NIEMANN}{2013}
+{NIEMANN, H. \textbf{Klassifikation von mustern}. [S.l.]: springer-Verlag,
+  2013. 209--216~p.}
+
+\bibitem[Ohm e L{\"u}ke 2010]{ohm2010signalubertragung}
+\abntrefinfo{Ohm e L{\"u}ke}{OHM; L{\"U}KE}{2010}
+{OHM, J.-R.; L{\"U}KE, H.~D. \textbf{Signal{\"u}bertragung: Grundlagen der
+  digitalen und analogen Nachrichten{\"u}bertragungssysteme}. [S.l.]:
+  Springer-verlag, 2010. 56--58~p.}
+
+\bibitem[Pampalk 2001]{pampalk2001islands}
+\abntrefinfo{Pampalk}{PAMPALK}{2001}
+{PAMPALK, E. \textbf{Islands of music: Analysis, organization, and
+  visualization of music archives}. [S.l.]: na, 2001.}
+
+\bibitem[Rauber, Pampalk e Merkl 2002]{rauber2002using}
+\abntrefinfo{Rauber, Pampalk e Merkl}{RAUBER; PAMPALK; MERKL}{2002}
+{RAUBER, A.; PAMPALK, E.; MERKL, D. \textbf{Using psycho-acoustic models and
+  self-organizing maps to create a hierarchical structuring of music by sound
+  similarity}. [S.l.]: na, 2002.}
+
+\bibitem[Schreiber 2015]{schreiber2015improving}
+\abntrefinfo{Schreiber}{SCHREIBER}{2015}
+{SCHREIBER, H. Improving genre annotations for the million song dataset. In:
+  \textbf{ISMIR}. [S.l.: s.n.], 2015. p. 241--247.}
+
+\bibitem[Schroeder, Atal e Hall 1979]{schroeder1979optimizing}
+\abntrefinfo{Schroeder, Atal e Hall}{SCHROEDER; ATAL; HALL}{1979}
+{SCHROEDER, M.~R.; ATAL, B.~S.; HALL, J. Optimizing digital speech coders by
+  exploiting masking properties of the human ear.
+\textbf{The Journal of the Acoustical Society of America}, Acoustical Society
+  of America, v.~66, n.~6, p. 1647--1652, 1979.}
+
+\bibitem[Shani e Gunawardana 2011]{shani2011evaluating}
+\abntrefinfo{Shani e Gunawardana}{SHANI; GUNAWARDANA}{2011}
+{SHANI, G.; GUNAWARDANA, A. Evaluating recommendation systems. In:
+  \textbf{Recommender systems handbook}. [S.l.]: Springer, 2011. p. 257--297.}
+
+\bibitem[Tzanetakis e Cook 2002]{tzanetakis2002musical}
+\abntrefinfo{Tzanetakis e Cook}{TZANETAKIS; COOK}{2002}
+{TZANETAKIS, G.; COOK, P. Musical genre classification of audio signals.
+\textbf{Speech and Audio Processing, IEEE transactions on}, IEEE, v.~10, n.~5,
+  p. 293--302, 2002.}
+
+\bibitem[Uitdenbogerd e Schyndel 2002]{uitdenbogerd2002review}
+\abntrefinfo{Uitdenbogerd e Schyndel}{UITDENBOGERD; SCHYNDEL}{2002}
+{UITDENBOGERD, A.~L.; SCHYNDEL, R.~G. van. A review of factors affecting music
+  recommender success. In:  \textbf{ISMIR}. [S.l.: s.n.], 2002. v.~2, p.
+  204--208.}
+
+\bibitem[Vembu e Baumann 2005]{vembu2005self}
+\abntrefinfo{Vembu e Baumann}{VEMBU; BAUMANN}{2005}
+{VEMBU, S.; BAUMANN, S. A self-organizing map based knowledge discovery for
+  music recommendation systems. In:  \textbf{Computer music modeling and
+  retrieval}. [S.l.]: Springer, 2005. p. 119--129.}
+
+\bibitem[Wells e Tokinoya 1998]{wells1998genre}
+\abntrefinfo{Wells e Tokinoya}{WELLS; TOKINOYA}{1998}
+{WELLS, A.; TOKINOYA, H. The genre preferences of western popular music by
+  japanese adolescents.
+\textbf{Popular Music \& Society}, Taylor \& Francis, v.~22, n.~1, p. 41--53,
+  1998.}
+
+\bibitem[Yoshii et al. 2008]{yoshii2008efficient}
+\abntrefinfo{Yoshii et al.}{YOSHII et al.}{2008}
+{YOSHII, K. et al. An efficient hybrid music recommender system using an
+  incrementally trainable probabilistic generative model.
+\textbf{Audio, Speech, and Language Processing, IEEE Transactions on}, IEEE,
+  v.~16, n.~2, p. 435--447, 2008.}
+
+\end{thebibliography}

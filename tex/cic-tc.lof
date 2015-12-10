@@ -1,0 +1,33 @@
+\select@language {english}
+\select@language {brazilian}
+\select@language {english}
+\addvspace {10\p@ }
+\select@language {brazilian}
+\addvspace {10\p@ }
+\select@language {english}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces The figure below shows a signal(blue) and three window functions(red) with no overlap. For each segment the window function is multipied with the signal and a DTFT is applied.\relax }}{15}{figure.caption.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Figure showing logarithmic plots of powerspectra of different musical styles. The spectra were generated using a hamming window function, segment size of 23 milliseconds and an overlap of 50\%.\relax }}{16}{figure.caption.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Figure showing 4 example plots of rhythm histograms.\relax }}{18}{figure.caption.3}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Genre annotations for 6000 tracks of the constructed subset\relax }}{25}{figure.caption.4}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Bark scale\relax }}{28}{figure.caption.5}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Logarithmic plot of $S$, notice the asymmetrical shape\relax }}{29}{figure.caption.6}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Examples of how spreading affects the critical bands\relax }}{29}{figure.caption.7}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces The phone contours\relax }}{31}{figure.caption.8}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Relation between loudness sensation and loudness level\relax }}{32}{figure.caption.9}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Loudness modulation in certain critical bands of an electronic music piece. Observe the periodicity especially in lower bands and in the last plot.\relax }}{34}{figure.caption.10}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces fluctuation strength model\relax }}{35}{figure.caption.11}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Examples of Fluctuation Patterns\relax }}{36}{figure.caption.12}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces SOM clusters using distinct feature vectors\relax }}{44}{figure.caption.15}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Implemented recommender system\relax }}{45}{figure.caption.16}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Comparison of two users likes in musical space\relax }}{46}{figure.caption.17}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces The two like sets of a user used for evaluation in music similarity space\relax }}{54}{figure.caption.23}
+\addvspace {10\p@ }

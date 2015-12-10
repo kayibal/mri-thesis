@@ -11,9 +11,9 @@ from math import floor, log, exp, ceil
 from pydub import AudioSegment
 from scipy import interpolate
 from scipy.fftpack import fft, dct
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from pylab import get_current_fig_manager
-
+plt = {}
 class AudioAnalytics(object):
     """AudioAnalytics base class.
 
@@ -194,7 +194,7 @@ class AudioAnalytics(object):
         '''
         w = np.hanning(self.window_size)
         n_iter = len(self.processed)/self.window_size*2-1
-	spectrum = np.zeros((self.window_size/2+1,n_iter))
+    spectrum = np.zeros((self.window_size/2+1,n_iter))
         idx = np.arange(self.window_size)
         #TODO vectorize with numpy rfftn... problem overlapping
         for i in range(n_iter):
@@ -353,7 +353,7 @@ class AudioAnalytics(object):
         plt.figure(num=1, figsize=(15, 3.5), dpi=72, facecolor='w', edgecolor='k')
         plt.subplot(111)
         plt.ylabel('Channel 1')
-            	#channel_1.set_xlim(0,song_length) # todo
+                #channel_1.set_xlim(0,song_length) # todo
         plt.ylim(-32768,32768)
         plt.plot(samples)
         plt.show()
@@ -439,7 +439,7 @@ class MFCC(AudioAnalytics):
         self.map_to_mel()
         self.calc_gradient()
         plt.figure()
-        mfcc = dct(self.processed, type=2, norm="ortho", axis=0)[:13]
+        self.mfcc = dct(self.processed, type=2, norm="ortho", axis=0)[:13]
         plt.imshow(mfcc, origin="lower", aspect="auto",  interpolation="nearest")
         self.delta = dct(self.delta, type=2, norm="ortho", axis=0)[:13]
         self.processed = np.zeros(26)
