@@ -81,7 +81,7 @@ class AudioAnalytics(object):
     #phone levels we have data for
     phons = np.array([0,3,20,40,60,80,100,101])
     
-    def __init__(self, audiofile, Hz=11025, mono=True, chunk=16, window_size=0.023, terhardt=False, max_length = 120):
+    def __init__(self, audiofile, Hz=11025, mono=True, skip_frames = 3, chunk=16, window_size=0.023, terhardt=False, max_length = 120):
         self.freq = Hz
         self.max_length =  max_length / round( 2.**chunk/self.freq)
         self.mono = mono
@@ -92,7 +92,7 @@ class AudioAnalytics(object):
         self.window_size = 2**int(ceil(log(window_size*Hz)/log(2)))
         self.frame_size = 2**chunk / self.window_size
         self.load_raw_audio()
-        self.prepare_raw_data()
+        self.prepare_raw_data(skip=skip_frames)
         
     def compute_sone(self, plot=True, separate=True, frames=1):
         if plot:
@@ -153,13 +153,13 @@ class AudioAnalytics(object):
     def load_raw_audio(self):
         '''Loads raw pcm data'''
         self.raw = AudioSegment.from_file(self.audiofile)
-        if(self.mono):
+        if not(self.mono):
             self.raw = self.raw.set_channels(1)
         self.raw = self.raw.set_frame_rate(self.freq)
         dt = np.dtype("i"+str(self.raw.sample_width))
         self.raw = np.fromstring(self.raw._data,dtype=dt)
     
-    def prepare_raw_data(self, bounds=[]):
+    def prepare_raw_data(self, bounds=[], skip=3):
         '''
         Removes intro and outro and reduces data load by dividing into chunks and only keeping every third of it
         '''
@@ -171,7 +171,8 @@ class AudioAnalytics(object):
             chunk_size = 2**self.chunk
             s = self.raw
             self.n_frames = floor(len(s)/float(chunk_size))
-            if(self.n_frames < 7):
+            if(self.n_frames < 4):
+                print self.n_frames
                 raise SmallFileError("this file is to short for analysis")
             elif(self.n_frames <= self.max_length + 4): #usable audio is less than 2 min
                 print "small"
@@ -183,9 +184,11 @@ class AudioAnalytics(object):
                 s = s[idx[0]:idx[1]]
                 self.n_frames = 20
             #keep only every third chunk
-            print len(s),self.n_frames
-            self.processed = (s.reshape((self.n_frames,chunk_size))[::3]).flatten()
-    
+            #print len(s),self.n_frames
+            if skip > 0:
+                self.processed = (s.reshape((self.n_frames,chunk_size))[::skip]).flatten()
+            else:
+                self.processed = s
     def powerspectrum(self):
         '''Computes the power spectrum over our processed data
         
@@ -194,12 +197,12 @@ class AudioAnalytics(object):
         '''
         w = np.hanning(self.window_size)
         n_iter = len(self.processed)/self.window_size*2-1
-	spectrum = np.zeros((self.window_size/2+1,n_iter))
+    	spectrum = np.zeros((self.window_size/2+1,n_iter))
         idx = np.arange(self.window_size)
         #TODO vectorize with numpy rfftn... problem overlapping
         for i in range(n_iter):
             #X = np.fft.fft(self.processed[idx]*w,self.window_size)
-            spectrum[:,i] = self.periodogram(self.processed[idx])# X[:self.window_size/2+1]
+            spectrum[:,i] = np.abs(self.periodogram(self.processed[idx]))# X[:self.window_size/2+1]
             idx += self.window_size/2
         self.processed = spectrum
         #self.processed = np.abs(spectrum/sum(w)*2)**2
@@ -259,10 +262,11 @@ class AudioAnalytics(object):
         spread = CONST_spread[0:self.processed.shape[0],:]
         self.processed = np.dot(spread, self.processed)
     
-    def map_to_decibel(self):
+    def map_to_decibel(self, alt=True):
         '''Logarithmic decibel scale is applied'''
         self.processed[np.where(self.processed<1)] = 1.
-        self.processed = 10*np.log10(self.processed)
+        #TODO check if 10 or 20 is better
+        self.processed = 20*np.log10(self.processed)
         
     def map_to_phon(self):
         '''decibel are converted into phon which are a logarithmic unit to human loudness sensation'''
@@ -353,7 +357,7 @@ class AudioAnalytics(object):
         plt.figure(num=1, figsize=(15, 3.5), dpi=72, facecolor='w', edgecolor='k')
         plt.subplot(111)
         plt.ylabel('Channel 1')
-            	#channel_1.set_xlim(0,song_length) # todo
+                #channel_1.set_xlim(0,song_length) # todo
         plt.ylim(-32768,32768)
         plt.plot(samples)
         plt.show()
@@ -403,13 +407,20 @@ class FluctuationPattern(AudioAnalytics):
         self.compute_fp()
         self.compute_modified_fp()
         return np.median(self.processed, axis=0)
+    
+    @staticmethod
+    def plot_rhythm_histogram(fp):
+        rh = np.abs(np.sum(fp, axis = 0))
+        plt, ax = plt.subplots()
+        ax.bar(range(rh.shape[0]),rh)
+        plt.show()
         
     @staticmethod
-    def plot_frame(x):
+    def plot_frame(x,title):
         '''
             Plots a 2-dimensional frame in modulation spectrum
         '''
-        plt.figure()
+        plt.title(title)
         CS = plt.imshow(x,origin='lower', aspect='auto', interpolation='nearest') 
         ticks_lbl = np.arange(0,600,50)        
         ticks_loc = (np.arange(float(len(ticks_lbl))))/len(ticks_lbl)*x.shape[1]
@@ -432,18 +443,18 @@ class FluctuationPattern(AudioAnalytics):
 class MFCC(AudioAnalytics):
     
     def __init__(self, audiofile, mel_bands = 40, weight=2):
-        super(MFCC, self).__init__(audiofile);
+        super(MFCC, self).__init__(audiofile, skip_frames=3);
         self.weight = float(weight)
         self.mel_bands = mel_bands
         self.powerspectrum()
         self.map_to_mel()
         self.calc_gradient()
-        plt.figure()
-        mfcc = dct(self.processed, type=2, norm="ortho", axis=0)[:13]
-        plt.imshow(mfcc, origin="lower", aspect="auto",  interpolation="nearest")
+        #plt.figure()
+        self.mfcc = dct(self.processed, type=2, norm="ortho", axis=0)[:13]
+        #plt.imshow(mfcc, origin="lower", aspect="auto",  interpolation="nearest")
         self.delta = dct(self.delta, type=2, norm="ortho", axis=0)[:13]
         self.processed = np.zeros(26)
-        self.processed[:13] = np.mean(mfcc, axis = 1)
+        self.processed[:13] = np.mean(self.mfcc, axis = 1)
         self.processed[13:] = np.mean(self.delta, axis = 1)
         
     def mel_function(self, freq):
@@ -476,8 +487,10 @@ class MFCC(AudioAnalytics):
             rslope = self.weight / (hi-cen)
             
             filterbank[:,i][lid] = lslope * (freq_bin[lid]-low)
-            filterbank[:,i][rid] = rslope * (hi - self.freq_bin[rid])
-        self.processed = np.log10(np.dot(self.processed.transpose(),filterbank).transpose())
+            filterbank[:,i][rid] = rslope * (hi - freq_bin[rid])
+        temp = np.dot(self.processed.transpose(),filterbank).transpose()
+        temp[np.where(temp == 0)] = 0.1
+        self.processed = np.log10(temp)
         
     def calc_gradient(self):
         self.delta = np.zeros(self.processed.shape)
