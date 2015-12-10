@@ -4,3 +4,11 @@
 *.npy
 *.npz
 *.pyc
+*.h5
+*.tsv
+*.p
+*.tar.gz
+*.zip
+*.cls
+*.db
+
